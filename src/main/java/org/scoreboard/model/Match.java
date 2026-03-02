@@ -75,7 +75,7 @@ public class Match {
      * @return the normalized team name with whitespace trimmed
      * @throws IllegalArgumentException if the name is null or empty after trimming
      */
-    private static String validateAndNormalizeTeamName(String name) {
+    public static String validateAndNormalizeTeamName(String name) {
         if (name == null) {
             throw new IllegalArgumentException("Team name cannot be null or empty");
         }

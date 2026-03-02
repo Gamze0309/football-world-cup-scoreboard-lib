@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -74,5 +75,74 @@ public class ScoreboardServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
             () -> scoreboardService.startMatch("Canada", invalidAway));
         assertEquals("Team name cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("should reject when home team already has an active match")
+    void shouldRejectWhenHomeTeamAlreadyActive() {
+        ScoreboardService scoreboardService = new ScoreboardService();
+        scoreboardService.startMatch("Brazil", "Argentina");
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> scoreboardService.startMatch("Brazil", "Canada"));
+        assertTrue(exception.getMessage().contains("already has an active match"));
+    }
+
+    @Test
+    @DisplayName("should reject when away team already has an active match")
+    void shouldRejectWhenAwayTeamAlreadyActive() {
+        ScoreboardService scoreboardService = new ScoreboardService();
+        scoreboardService.startMatch("Turkey", "Canada");
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> scoreboardService.startMatch("Brazil", "Canada"));
+        assertTrue(exception.getMessage().contains("already has an active match"));
+    }
+
+    @Test
+    @DisplayName("should reject duplicate match")
+    void shouldRejectDuplicateMatch() {
+        ScoreboardService scoreboardService = new ScoreboardService();
+        scoreboardService.startMatch("Brazil", "Canada");
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> scoreboardService.startMatch("Brazil", "Canada"));
+        assertTrue(exception.getMessage().contains("already has an active match"));
+    }
+
+    @Test
+    @DisplayName("should detect active teams ignoring case")
+    void shouldDetectActiveTeamsIgnoringCase() {
+        ScoreboardService scoreboardService = new ScoreboardService();
+        scoreboardService.startMatch("Turkey", "brazil");
+
+        assertAll(
+            () -> assertThrows(IllegalStateException.class,
+                () -> scoreboardService.startMatch("Brazil", "Canada")),
+            () -> assertThrows(IllegalStateException.class,
+                () -> scoreboardService.startMatch("Canada", "TURKEY"))
+        );
+    }
+
+    @Test
+    @DisplayName("should detect duplicate team when home team has trailing whitespace")
+    void shouldDetectDuplicateTeamWithHomeTeamWhitespace() {
+        ScoreboardService scoreboardService = new ScoreboardService();
+        scoreboardService.startMatch("Brazil", "Argentina");
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> scoreboardService.startMatch("Brazil ", "Canada"));
+        assertTrue(exception.getMessage().contains("already has an active match"));
+    }
+
+    @Test
+    @DisplayName("should detect duplicate team when away team has trailing whitespace")
+    void shouldDetectDuplicateTeamWithAwayTeamWhitespace() {
+        ScoreboardService scoreboardService = new ScoreboardService();
+        scoreboardService.startMatch("Brazil", "Argentina");
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> scoreboardService.startMatch("Canada", "Argentina "));
+        assertTrue(exception.getMessage().contains("already has an active match"));
     }
 }

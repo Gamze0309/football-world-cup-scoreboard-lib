@@ -35,6 +35,19 @@ public class ScoreboardService {
      * @throws IllegalArgumentException if either team name is null or empty after trimming
      */
     public void startMatch(String homeTeam, String awayTeam) {
+        String normalizedHome = Match.validateAndNormalizeTeamName(homeTeam);
+        String normalizedAway = Match.validateAndNormalizeTeamName(awayTeam);
+
+        for (Match match : matches) {
+            if (normalizedHome.equalsIgnoreCase(match.getHomeTeam()) || normalizedHome.equalsIgnoreCase(match.getAwayTeam())) {
+                throw new IllegalStateException("Team " + normalizedHome  + " already has an active match");
+            }
+
+            if (normalizedAway.equalsIgnoreCase(match.getHomeTeam()) || normalizedAway.equalsIgnoreCase(match.getAwayTeam())) {
+                throw new IllegalStateException("Team " + normalizedAway  + " already has an active match");
+            }
+        }
+
         Match match = new Match(homeTeam, awayTeam);
         matches.add(match);
     }
