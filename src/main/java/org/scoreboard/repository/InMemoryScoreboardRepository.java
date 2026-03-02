@@ -2,6 +2,7 @@ package org.scoreboard.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.scoreboard.model.Match;
@@ -30,15 +31,11 @@ public class InMemoryScoreboardRepository implements ScoreboardRepository{
      */
     @Override
     public synchronized void startMatch(String homeTeam, String awayTeam) {
-        
-        for (Match match : matches) {
-            if (homeTeam.equalsIgnoreCase(match.homeTeam()) || homeTeam.equalsIgnoreCase(match.awayTeam())) {
-                throw new IllegalStateException("Team " + homeTeam  + " already has an active match");
-            }
-
-             if (awayTeam.equalsIgnoreCase(match.homeTeam()) || awayTeam.equalsIgnoreCase(match.awayTeam())) {
-                throw new IllegalStateException("Team " + awayTeam  + " already has an active match");
-            }
+        if (hasActiveMatch(homeTeam)) {
+            throw new IllegalStateException("Team " + homeTeam + " already has an active match");
+        }
+        if (hasActiveMatch(awayTeam)) {
+            throw new IllegalStateException("Team " + awayTeam + " already has an active match");
         }
 
         Match match = new Match(homeTeam, awayTeam)
@@ -51,15 +48,15 @@ public class InMemoryScoreboardRepository implements ScoreboardRepository{
      */
     @Override
     public synchronized void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {  
-        for (int i = 0; i < matches.size(); i++) {
-            if (homeTeam.equalsIgnoreCase(matches.get(i).homeTeam()) &&
-                awayTeam.equalsIgnoreCase(matches.get(i).awayTeam())) {
-                    matches.set(i, matches.get(i).updateScore(homeScore, awayScore));
-                return;
-            }
+        Optional<Match> matchOpt = findMatch(homeTeam, awayTeam);
+    
+        if (matchOpt.isEmpty()) {
+            throw new IllegalStateException("Match between " + homeTeam + " and " + awayTeam + " not found");
         }
-
-        throw new IllegalStateException("Match between " + homeTeam + " and " + awayTeam + " not found");
+        
+        Match existing = matchOpt.get();
+        int index = matches.indexOf(existing);
+        matches.set(index, existing.updateScore(homeScore, awayScore));
     }
 
     /**
@@ -67,14 +64,31 @@ public class InMemoryScoreboardRepository implements ScoreboardRepository{
      */
     @Override
     public synchronized void finishMatch(String homeTeam, String awayTeam) {
-        for (int i = 0; i < matches.size(); i++) {
-            if (homeTeam.equalsIgnoreCase(matches.get(i).homeTeam()) &&
-                awayTeam.equalsIgnoreCase(matches.get(i).awayTeam())) {
-                    matches.remove(i);
-                    return;
+        Optional<Match> matchOpt = findMatch(homeTeam, awayTeam);
+    
+        if (matchOpt.isEmpty()) {
+            throw new IllegalStateException("Match between " + homeTeam + " and " + awayTeam + " not found");
+        }
+        
+        Match existing = matchOpt.get();
+        int index = matches.indexOf(existing);
+        matches.remove(index);
+    }
+
+    private boolean hasActiveMatch(String teamName) {
+        for (Match match : matches) {
+            if (teamName.equalsIgnoreCase(match.homeTeam()) ||
+                teamName.equalsIgnoreCase(match.awayTeam())) {
+                return true;
             }
         }
+        return false;
+    }
 
-        throw new IllegalStateException("Match between " + homeTeam + " and " + awayTeam + " not found");
+    private Optional<Match> findMatch(String homeTeam, String awayTeam) {
+        return matches.stream()
+            .filter(match -> homeTeam.equalsIgnoreCase(match.homeTeam()) &&
+                             awayTeam.equalsIgnoreCase(match.awayTeam()))
+            .findFirst();
     }
 }
