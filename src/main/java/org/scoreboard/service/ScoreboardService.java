@@ -36,7 +36,7 @@ public class ScoreboardService {
      */
     public List<Match> getAllMatchesSummary() {
         Comparator<Match> sortOrder = Comparator
-            .comparingInt((Match match) -> match.homeScore() + match.awayScore()).reversed()
+            .comparingInt(Match::totalScore).reversed()
             .thenComparing(Comparator.comparingLong(Match::insertionOrder).reversed());
 
         return scoreboardRepository.getAllMatches().stream()

@@ -136,4 +136,17 @@ public class MatchTest {
             assertEquals("Scores cannot be negative", exception.getMessage());
         }
     }
+    
+    @Nested
+    @DisplayName("Total Score")
+    class TotalScore {
+
+        @ParameterizedTest
+        @CsvSource({"0, 0, 0", "1, 0, 1", "0, 1, 1", "3, 2, 5", "6, 6, 12"})
+        @DisplayName("should calculate total as sum of home and away scores")
+        void shouldCalculateTotalScore(int homeScore, int awayScore, int expectedTotal) {
+            Match match = new Match("Mexico", "Canada").updateScore(homeScore, awayScore);
+            assertEquals(expectedTotal, match.totalScore());
+        }
+    }
 }

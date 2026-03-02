@@ -74,6 +74,18 @@ public record Match(String homeTeam, String awayTeam, int homeScore, int awaySco
     }
 
     /**
+     * Calculates and returns the total score of the match.
+     * <p>
+     * The total score is the sum of the home team score and away team score.
+     * </p>
+     *
+     * @return the total score (homeScore + awayScore)
+     */
+    public int totalScore() {
+        return homeScore + awayScore;
+    }
+
+    /**
      * Validates and normalizes a team name by trimming whitespace.
      * <p>
      * This method ensures that the team name is not null or empty (after trimming)
