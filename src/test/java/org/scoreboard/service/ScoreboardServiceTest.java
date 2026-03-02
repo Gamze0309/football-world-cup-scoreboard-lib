@@ -287,4 +287,47 @@ public class ScoreboardServiceTest {
 
         assertEquals(0, scoreboardService.getAllMatches().size());
     }
+
+    @Test
+    @DisplayName("should throw when match does not exist")
+    void shouldThrowWhenMatchNotFound() {
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> scoreboardService.finishMatch("Brazil", "Turkey"));
+        assertTrue(exception.getMessage().contains("not found"));
+    }
+
+    @Test
+    @DisplayName("should throw when finishing already finished match")
+    void shouldThrowWhenFinishingAlreadyFinished() {
+        scoreboardService.startMatch("Mexico", "Canada");
+        scoreboardService.finishMatch("Mexico", "Canada");
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> scoreboardService.finishMatch("Mexico", "Canada"));
+        assertTrue(exception.getMessage().contains("not found"));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    @DisplayName("should reject invalid home team name")
+    void shouldRejectInvalidHomeTeamNameOnFinishMatch(String invalidHome) {
+        scoreboardService.startMatch("Brazil", "Argentina");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> scoreboardService.finishMatch(invalidHome, "Argentina"));
+        assertEquals("Team name cannot be null or empty", exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    @DisplayName("should reject invalid away team name")
+    void shouldRejectInvalidAwayTeamNameOnFinishMatch(String invalidAway) {
+        scoreboardService.startMatch("Brazil", "Argentina");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> scoreboardService.finishMatch("Brazil", invalidAway));
+        assertEquals("Team name cannot be null or empty", exception.getMessage());
+    }
 }
