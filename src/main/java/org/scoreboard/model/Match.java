@@ -13,10 +13,14 @@ public class Match {
 
     /**
      * Creates a new match between two teams.
+     * <p>
+     * Team names are normalized by trimming leading and trailing whitespace.
+     * </p>
      *
      * @param homeTeam the name of the home team
      * @param awayTeam the name of the away team
-     * @throws IllegalArgumentException if either team name is null or empty after trimming
+     * @throws IllegalArgumentException if either team name is null or empty after trimming,
+     *                                  or if both team names are the same (case-insensitive)
      */
     public Match(String homeTeam, String awayTeam) {
         String normalizedHomeTeam = validateAndNormalizeTeamName(homeTeam);

@@ -27,12 +27,14 @@ public class ScoreboardService {
     /**
      * Starts a new match between two teams and adds it to the scoreboard.
      * <p>
-     * The match is initialized with a score of 0-0.
+     * The match is initialized with a score of 0-0. Team names are normalized by trimming whitespace.
      * </p>
      *
      * @param homeTeam the name of the home team
      * @param awayTeam the name of the away team
-     * @throws IllegalArgumentException if either team name is null or empty after trimming
+     * @throws IllegalArgumentException if either team name is null or empty after trimming,
+     *                                  or if both team names are the same (case-insensitive)
+     * @throws IllegalStateException if either team already has an active match
      */
     public void startMatch(String homeTeam, String awayTeam) {
         String normalizedHome = Match.validateAndNormalizeTeamName(homeTeam);
