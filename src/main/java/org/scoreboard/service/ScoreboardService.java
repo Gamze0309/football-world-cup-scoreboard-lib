@@ -67,10 +67,6 @@ public class ScoreboardService {
      * @throws IllegalStateException if the match is not found on the scoreboard
      */
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
-        if (homeScore < 0 || awayScore < 0) {
-            throw new IllegalArgumentException("Scores cannot be negative");
-        }
-        
         String normalizedHome = Match.validateAndNormalizeTeamName(homeTeam);
         String normalizedAway = Match.validateAndNormalizeTeamName(awayTeam);
         scoreboardRepository.updateScore(normalizedHome, normalizedAway, homeScore, awayScore);

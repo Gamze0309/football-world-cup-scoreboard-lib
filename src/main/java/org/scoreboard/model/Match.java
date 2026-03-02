@@ -39,6 +39,7 @@ public record Match(String homeTeam, String awayTeam, int homeScore, int awaySco
         homeTeam = validateAndNormalizeTeamName(homeTeam);
         awayTeam = validateAndNormalizeTeamName(awayTeam);
         validateTeamsDifferent(homeTeam, awayTeam);
+        validateScores(homeScore, awayScore);
     }
 
     /**
@@ -84,6 +85,12 @@ public record Match(String homeTeam, String awayTeam, int homeScore, int awaySco
     private static void validateTeamsDifferent(String homeTeam, String awayTeam) {
         if (homeTeam.equalsIgnoreCase(awayTeam)) {
             throw new IllegalArgumentException("Team names cannot be the same");
+        }
+    }
+
+    private static void validateScores(int homeScore, int awayScore) {
+        if (homeScore < 0 || awayScore < 0) {
+            throw new IllegalArgumentException("Scores cannot be negative");
         }
     }
 }

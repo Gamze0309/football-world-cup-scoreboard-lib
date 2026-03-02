@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -111,5 +112,16 @@ public class MatchTest {
             () -> assertEquals(0, original.homeScore()),
             () -> assertEquals(0, original.awayScore())
         );
+    }
+
+    @ParameterizedTest
+    @CsvSource({"-1, 0", "0, -1", "-1, -1", "-5, -10"})
+    @DisplayName("should reject negative scores")
+    void shouldRejectNegativeScores(int homeScore, int awayScore) {
+        Match match = new Match("Mexico", "Canada");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> match.updateScore(homeScore, awayScore));
+        assertEquals("Scores cannot be negative", exception.getMessage());
     }
 }
