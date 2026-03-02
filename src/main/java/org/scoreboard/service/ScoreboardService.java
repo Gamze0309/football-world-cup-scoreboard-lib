@@ -87,4 +87,29 @@ public class ScoreboardService {
 
         throw new IllegalStateException("Match between " + homeTeam + " and " + awayTeam + " not found");
     }
+
+    /**
+     * Finishes a match and removes it from the scoreboard.
+     * <p>
+     * Finds the match by team names (case-insensitive) and removes it from the active matches.
+     * Team names are normalized by trimming whitespace.
+     * If the match is not found, the method returns silently without throwing an exception.
+     * </p>
+     *
+     * @param homeTeam the name of the home team
+     * @param awayTeam the name of the away team
+     * @throws IllegalArgumentException if either team name is null or empty after trimming
+     */
+    public void finishMatch(String homeTeam, String awayTeam) {
+        String normalizedHome = Match.validateAndNormalizeTeamName(homeTeam);
+        String normalizedAway = Match.validateAndNormalizeTeamName(awayTeam);
+
+        for (int i = 0; i < matches.size(); i++) {
+            if (normalizedHome.equalsIgnoreCase(matches.get(i).getHomeTeam()) &&
+                normalizedAway.equalsIgnoreCase(matches.get(i).getAwayTeam())) {
+                    matches.remove(i);
+                    return;
+            }
+        }
+    }
 }
