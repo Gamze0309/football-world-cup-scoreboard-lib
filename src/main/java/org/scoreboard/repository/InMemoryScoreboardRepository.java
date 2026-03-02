@@ -2,6 +2,7 @@ package org.scoreboard.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.scoreboard.model.Match;
 
@@ -14,6 +15,7 @@ import org.scoreboard.model.Match;
  */
 public class InMemoryScoreboardRepository implements ScoreboardRepository{
     private final List<Match> matches = new ArrayList<>();
+    private final AtomicLong insertionCounter = new AtomicLong(0);
 
     /**
      * {@inheritDoc}
@@ -39,7 +41,8 @@ public class InMemoryScoreboardRepository implements ScoreboardRepository{
             }
         }
 
-        Match match = new Match(homeTeam, awayTeam);
+        Match match = new Match(homeTeam, awayTeam)
+            .withInsertionOrder(insertionCounter.getAndIncrement());
         matches.add(match);
     }
 

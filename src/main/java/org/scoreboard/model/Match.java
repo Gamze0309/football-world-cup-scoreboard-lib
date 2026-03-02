@@ -8,7 +8,7 @@ package org.scoreboard.model;
  * by trimming whitespace during construction.
  * </p>
  */
-public record Match(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+public record Match(String homeTeam, String awayTeam, int homeScore, int awayScore, long insertionOrder) {
 
     /**
      * Creates a new match between two teams with initial score of 0-0.
@@ -22,7 +22,7 @@ public record Match(String homeTeam, String awayTeam, int homeScore, int awaySco
      *                                  or if both team names are the same (case-insensitive)
      */
     public Match(String homeTeam, String awayTeam) {
-        this(homeTeam, awayTeam, 0, 0);
+        this(homeTeam, awayTeam, 0, 0, 0);
     }
 
     /**
@@ -54,7 +54,23 @@ public record Match(String homeTeam, String awayTeam, int homeScore, int awaySco
      * @return a new Match instance with the updated scores
      */
     public Match updateScore(int homeScore, int awayScore) {
-        return new Match(homeTeam, awayTeam, homeScore, awayScore);
+        return new Match(homeTeam, awayTeam, homeScore, awayScore, insertionOrder);
+    }
+
+    /**
+     * Creates a new Match instance with a specified insertion order.
+     * <p>
+     * Since Match is immutable, this method returns a new Match object
+     * with the same teams and scores but with the specified insertion order.
+     * The insertion order is used to maintain the chronological order of matches
+     * when they have the same total score.
+     * </p>
+     *
+     * @param insertionOrder the insertion order value to assign to the match
+     * @return a new Match instance with the specified insertion order
+     */
+    public Match withInsertionOrder(long insertionOrder) {
+        return new Match(homeTeam, awayTeam, homeScore, awayScore, insertionOrder);
     }
 
     /**

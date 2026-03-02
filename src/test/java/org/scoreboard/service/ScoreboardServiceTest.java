@@ -400,5 +400,56 @@ public class ScoreboardServiceTest {
                 () -> assertEquals("Germany", summary.get(2).homeTeam())
             );
         }
+        
+        @Test
+        @DisplayName("should break ties by most recently started match first")
+        void shouldBreakTiesByMostRecentlyStarted() {
+            scoreboardService.startMatch("Mexico", "Canada");
+            scoreboardService.startMatch("Spain", "Brazil");
+            scoreboardService.startMatch("Germany", "France");
+
+            scoreboardService.updateScore("Mexico", "Canada", 3, 3);
+            scoreboardService.updateScore("Spain", "Brazil", 4, 2);
+            scoreboardService.updateScore("Germany", "France", 5, 1);
+
+            List<Match> summary = scoreboardService.getAllMatchesSummary();
+
+            assertAll(
+                () -> assertEquals("Germany", summary.get(0).homeTeam()),
+                () -> assertEquals("Spain", summary.get(1).homeTeam()),
+                () -> assertEquals("Mexico", summary.get(2).homeTeam())
+            );
+        }
+
+        @Test
+        @DisplayName("should match exact example from requirements")
+        void shouldMatchExactRequirementsExample() {
+            scoreboardService.startMatch("Mexico", "Canada");
+            scoreboardService.startMatch("Spain", "Brazil");
+            scoreboardService.startMatch("Germany", "France");
+            scoreboardService.startMatch("Uruguay", "Italy");
+            scoreboardService.startMatch("Argentina", "Australia");
+
+            scoreboardService.updateScore("Mexico", "Canada", 0, 5);
+            scoreboardService.updateScore("Spain", "Brazil", 10, 2);
+            scoreboardService.updateScore("Germany", "France", 2, 2);
+            scoreboardService.updateScore("Uruguay", "Italy", 6, 6);
+            scoreboardService.updateScore("Argentina", "Australia", 3, 1);
+
+            List<Match> summary = scoreboardService.getAllMatchesSummary();
+
+            assertAll(
+                () -> assertEquals("Uruguay", summary.get(0).homeTeam()),
+                () -> assertEquals("Italy", summary.get(0).awayTeam()),
+                () -> assertEquals("Spain", summary.get(1).homeTeam()),
+                () -> assertEquals("Brazil", summary.get(1).awayTeam()),
+                () -> assertEquals("Mexico", summary.get(2).homeTeam()),
+                () -> assertEquals("Canada", summary.get(2).awayTeam()),
+                () -> assertEquals("Argentina", summary.get(3).homeTeam()),
+                () -> assertEquals("Australia", summary.get(3).awayTeam()),
+                () -> assertEquals("Germany", summary.get(4).homeTeam()),
+                () -> assertEquals("France", summary.get(4).awayTeam())
+            );
+        }
     }
 }
