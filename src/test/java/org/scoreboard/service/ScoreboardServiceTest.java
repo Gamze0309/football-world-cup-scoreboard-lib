@@ -348,4 +348,18 @@ public class ScoreboardServiceTest {
             assertEquals("Team name cannot be null or empty", exception.getMessage());
         }
     }
+
+    @Nested
+    @DisplayName("Get Summary")
+    class GetSummary {
+
+        @Test
+        @DisplayName("should return unmodifiable list")
+        void shouldReturnUnmodifiableList() {
+            List<Match> result = scoreboardService.getAllMatches();
+
+            assertThrows(UnsupportedOperationException.class,
+                () -> result.add(new Match("Brazil", "Argentina")));
+        }
+    }
 }
