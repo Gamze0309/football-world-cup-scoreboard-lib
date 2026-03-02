@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -63,5 +64,21 @@ public class MatchTest {
             () -> assertEquals("Mexico", match.getHomeTeam()),
             () -> assertEquals("Canada", match.getAwayTeam())
         );
+    }
+
+    @Test
+    @DisplayName("should reject same home and away team")
+    void shouldRejectSameTeamNames() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> new Match("Canada", "Canada"));
+        assertTrue(exception.getMessage().contains("Team names cannot be the same"));
+    }
+
+    @Test
+    @DisplayName("should reject same team names ignoring case")
+    void shouldRejectSameTeamNamesIgnoringCase() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> new Match("Canada", "canada"));
+        assertTrue(exception.getMessage().contains("Team names cannot be the same"));
     }
 }

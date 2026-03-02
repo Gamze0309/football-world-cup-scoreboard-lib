@@ -22,6 +22,8 @@ public class Match {
         String normalizedHomeTeam = validateAndNormalizeTeamName(homeTeam);
         String normalizedAwayTeam = validateAndNormalizeTeamName(awayTeam);
 
+        validateTeamsDifferent(normalizedHomeTeam, normalizedAwayTeam);
+
         this.homeTeam = normalizedHomeTeam;
         this.awayTeam = normalizedAwayTeam;
     }
@@ -85,5 +87,11 @@ public class Match {
         }
 
         return normalized;
+    }
+
+    private static void validateTeamsDifferent(String homeTeam, String awayTeam) {
+        if (homeTeam.equalsIgnoreCase(awayTeam)) {
+            throw new IllegalArgumentException("Team names cannot be the same");
+        }
     }
 }
