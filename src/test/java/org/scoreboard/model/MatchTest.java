@@ -25,8 +25,8 @@ public class MatchTest {
     void shouldReturnTeamNamesFromGetters() {
         Match match = new Match("Mexico", "Canada");
         assertAll(
-            () -> assertEquals("Mexico", match.getHomeTeam()),
-            () -> assertEquals("Canada", match.getAwayTeam())
+            () -> assertEquals("Mexico", match.homeTeam()),
+            () -> assertEquals("Canada", match.awayTeam())
         );
     }
     
@@ -36,8 +36,8 @@ public class MatchTest {
         Match match = new Match("Mexico", "Canada");
 
         assertAll(
-            () -> assertEquals(0, match.getHomeScore()),
-            () -> assertEquals(0, match.getAwayScore())
+            () -> assertEquals(0, match.homeScore()),
+            () -> assertEquals(0, match.awayScore())
         );
     }
 
@@ -66,8 +66,8 @@ public class MatchTest {
     void shouldNormalizeTeamNamesByTrimmingWhitespace() {
         Match match = new Match("Mexico ", "Canada ");
         assertAll(
-            () -> assertEquals("Mexico", match.getHomeTeam()),
-            () -> assertEquals("Canada", match.getAwayTeam())
+            () -> assertEquals("Mexico", match.homeTeam()),
+            () -> assertEquals("Canada", match.awayTeam())
         );
     }
 
@@ -94,10 +94,10 @@ public class MatchTest {
         Match updated = original.updateScore(2, 3);
 
         assertAll(
-            () -> assertEquals(2, updated.getHomeScore()),
-            () -> assertEquals(3, updated.getAwayScore()),
-            () -> assertEquals("Mexico", updated.getHomeTeam()),
-            () -> assertEquals("Canada", updated.getAwayTeam())
+            () -> assertEquals(2, updated.homeScore()),
+            () -> assertEquals(3, updated.awayScore()),
+            () -> assertEquals("Mexico", updated.homeTeam()),
+            () -> assertEquals("Canada", updated.awayTeam())
         );
     }
 
@@ -108,8 +108,8 @@ public class MatchTest {
         original.updateScore(2, 3);
 
         assertAll(
-            () -> assertEquals(0, original.getHomeScore()),
-            () -> assertEquals(0, original.getAwayScore())
+            () -> assertEquals(0, original.homeScore()),
+            () -> assertEquals(0, original.awayScore())
         );
     }
 }

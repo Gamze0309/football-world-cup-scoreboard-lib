@@ -64,8 +64,8 @@ public class ScoreboardServiceTest {
             Match match = matches.get(0);
 
             assertAll(
-                () -> assertEquals("Brazil", match.getHomeTeam(), "Home team name should be 'Brazil'"),
-                () -> assertEquals("Argentina", match.getAwayTeam(), "Away team name should be 'Argentina'")
+                () -> assertEquals("Brazil", match.homeTeam(), "Home team name should be 'Brazil'"),
+                () -> assertEquals("Argentina", match.awayTeam(), "Away team name should be 'Argentina'")
             );
         }
 
@@ -165,8 +165,8 @@ public class ScoreboardServiceTest {
 
             Match match = scoreboardService.getAllMatches().get(0);
             assertAll(
-                () -> assertEquals(2, match.getHomeScore()),
-                () -> assertEquals(3, match.getAwayScore())
+                () -> assertEquals(2, match.homeScore()),
+                () -> assertEquals(3, match.awayScore())
             );
         }
 
@@ -179,8 +179,8 @@ public class ScoreboardServiceTest {
 
             Match match = scoreboardService.getAllMatches().get(0);
             assertAll(
-                () -> assertEquals(2, match.getHomeScore()),
-                () -> assertEquals(3, match.getAwayScore())
+                () -> assertEquals(2, match.homeScore()),
+                () -> assertEquals(3, match.awayScore())
             );
         }
 
@@ -192,8 +192,8 @@ public class ScoreboardServiceTest {
 
             Match match = scoreboardService.getAllMatches().get(0);
             assertAll(
-                () -> assertEquals(2, match.getHomeScore()),
-                () -> assertEquals(3, match.getAwayScore())
+                () -> assertEquals(2, match.homeScore()),
+                () -> assertEquals(3, match.awayScore())
             );
         }
 
@@ -203,7 +203,7 @@ public class ScoreboardServiceTest {
             scoreboardService.startMatch("Mexico", "Germany");
             scoreboardService.updateScore("Mexico ", " Germany", 3, 3);
 
-            assertEquals(3, scoreboardService.getAllMatches().get(0).getHomeScore());
+            assertEquals(3, scoreboardService.getAllMatches().get(0).homeScore());
         }
 
         @ParameterizedTest
@@ -282,8 +282,8 @@ public class ScoreboardServiceTest {
             List<Match> matches = scoreboardService.getAllMatches();
             assertAll(
                 () -> assertEquals(1, matches.size()),
-                () -> assertEquals("Brazil", matches.get(0).getHomeTeam()),
-                () -> assertEquals("Argentina", matches.get(0).getAwayTeam())
+                () -> assertEquals("Brazil", matches.get(0).homeTeam()),
+                () -> assertEquals("Argentina", matches.get(0).awayTeam())
             );
         }
 
