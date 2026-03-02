@@ -193,4 +193,56 @@ public class ScoreboardServiceTest {
 
         assertEquals(3, scoreboardService.getAllMatches().get(0).getHomeScore());
     }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    @DisplayName("should reject invalid home team name on update score")
+    void shouldRejectInvalidHomeTeamNameOnUpdateScore(String invalidHome) {
+        scoreboardService.startMatch("Canada", "Brazil");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> scoreboardService.updateScore(invalidHome, "Brazil", 1, 1));
+        assertEquals("Team name cannot be null or empty", exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    @DisplayName("should reject invalid away team name on updateScore")
+    void shouldRejectInvalidAwayTeamNameOnUpdateScore(String invalidAway) {
+        scoreboardService.startMatch("Canada", "Brazil");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> scoreboardService.updateScore("Canada", invalidAway, 1, 1));
+        assertEquals("Team name cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("should not update non existing match")
+    void shouldNotUpdateNonExistingMatch() {
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> scoreboardService.updateScore("Canada", "Brazil", 1, 1));
+        assertTrue(exception.getMessage().contains("not found"));
+    }
+
+    @Test
+    @DisplayName("should not update with negative home score")
+    void shouldNotUpdateWithNegativeHomeScore() {
+        scoreboardService.startMatch("Canada", "Brazil");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> scoreboardService.updateScore("Canada", "Brazil", -1, 1));
+        assertTrue(exception.getMessage().contains("negative"));
+    }
+
+    @Test
+    @DisplayName("should not update with negative away score")
+    void shouldNotUpdateWithNegativeAwayScore() {
+        scoreboardService.startMatch("Canada", "Brazil");
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> scoreboardService.updateScore("Canada", "Brazil", 1, -1));
+        assertTrue(exception.getMessage().contains("negative"));
+    }
 }

@@ -65,9 +65,15 @@ public class ScoreboardService {
      * @param awayTeam the name of the away team
      * @param homeScore the new score for the home team
      * @param awayScore the new score for the away team
-     * @throws IllegalArgumentException if either team name is null or empty after trimming
+     * @throws IllegalArgumentException if either team name is null or empty after trimming,
+     *                                  or if either score is negative
+     * @throws IllegalStateException if the match is not found on the scoreboard
      */
     public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+        if (homeScore < 0 || awayScore < 0) {
+            throw new IllegalArgumentException("Scores cannot be negative");
+        }
+
         String normalizedHome = Match.validateAndNormalizeTeamName(homeTeam);
         String normalizedAway = Match.validateAndNormalizeTeamName(awayTeam);
 
@@ -78,5 +84,7 @@ public class ScoreboardService {
                 return;
             }
         }
+
+        throw new IllegalStateException("Match between " + homeTeam + " and " + awayTeam + " not found");
     }
 }
