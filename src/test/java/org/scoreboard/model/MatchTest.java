@@ -1,9 +1,14 @@
 package org.scoreboard.model;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class MatchTest {
     @Test
@@ -28,5 +33,35 @@ public class MatchTest {
 
         assertEquals(0, match.getHomeScore());
         assertEquals(0, match.getAwayScore());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    @DisplayName("should reject invalid home team name")
+    void shouldRejectInvalidHomeTeamName(String invalidHome) {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> new Match(invalidHome, "Turkey"));
+        assertEquals("Team name cannot be null or empty", exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    @DisplayName("should reject invalid away team name")
+    void shouldRejectInvalidAwayTeamName(String invalidAway) {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> new Match("Germany", invalidAway));
+        assertEquals("Team name cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("should normalize team names by trimming whitespace")
+    void shouldNormalizeTeamNamesByTrimmingWhitespace() {
+        Match match = new Match("Mexico ", "Canada ");
+        assertAll(
+            () -> assertEquals("Mexico", match.getHomeTeam()),
+            () -> assertEquals("Canada", match.getAwayTeam())
+        );
     }
 }

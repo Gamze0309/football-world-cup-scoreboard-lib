@@ -16,10 +16,14 @@ public class Match {
      *
      * @param homeTeam the name of the home team
      * @param awayTeam the name of the away team
+     * @throws IllegalArgumentException if either team name is null or empty after trimming
      */
     public Match(String homeTeam, String awayTeam) {
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
+        String normalizedHomeTeam = validateAndNormalizeTeamName(homeTeam);
+        String normalizedAwayTeam = validateAndNormalizeTeamName(awayTeam);
+
+        this.homeTeam = normalizedHomeTeam;
+        this.awayTeam = normalizedAwayTeam;
     }
 
     /**
@@ -56,5 +60,30 @@ public class Match {
      */
     public int getAwayScore() {
         return 0;
+    }
+
+    /**
+     * Validates and normalizes a team name by trimming whitespace.
+     * <p>
+     * This method ensures that the team name is not null or empty (after trimming)
+     * and returns the normalized version with leading and trailing whitespace removed.
+     * </p>
+     *
+     * @param name the team name to validate and normalize
+     * @return the normalized team name with whitespace trimmed
+     * @throws IllegalArgumentException if the name is null or empty after trimming
+     */
+    private static String validateAndNormalizeTeamName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Team name cannot be null or empty");
+        }
+
+        String normalized = name.trim();
+
+        if (normalized.isEmpty()) {
+            throw new IllegalArgumentException("Team name cannot be null or empty");
+        }
+
+        return normalized;
     }
 }
