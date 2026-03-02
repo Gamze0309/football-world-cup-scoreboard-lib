@@ -4,8 +4,8 @@ package org.scoreboard.model;
  * Represents an immutable football match between two teams with their respective scores.
  * <p>
  * This record encapsulates the details of a match including the home team,
- * away team, and their current scores. Team names are automatically normalized
- * by trimming whitespace during construction.
+ * away team, their current scores, and an insertion order for tracking when the match was started.
+ * Team names are automatically normalized by trimming whitespace during construction.
  * </p>
  */
 public record Match(String homeTeam, String awayTeam, int homeScore, int awayScore, long insertionOrder) {
@@ -26,14 +26,16 @@ public record Match(String homeTeam, String awayTeam, int homeScore, int awaySco
     }
 
     /**
-     * Canonical constructor that validates and normalizes team names.
+     * Canonical constructor that validates and normalizes team names and scores.
      * <p>
      * This compact constructor validates that team names are not null or empty,
-     * normalizes them by trimming whitespace, and ensures they are different.
+     * normalizes them by trimming whitespace, ensures they are different,
+     * and validates that scores are non-negative.
      * </p>
      *
      * @throws IllegalArgumentException if either team name is null or empty after trimming,
-     *                                  or if both team names are the same (case-insensitive)
+     *                                  if both team names are the same (case-insensitive),
+     *                                  or if either score is negative
      */
     public Match {
         homeTeam = validateAndNormalizeTeamName(homeTeam);
@@ -46,7 +48,7 @@ public record Match(String homeTeam, String awayTeam, int homeScore, int awaySco
      * Creates a new Match instance with updated scores.
      * <p>
      * Since Match is immutable, this method returns a new Match object
-     * with the same teams but updated scores.
+     * with the same teams and insertion order but updated scores.
      * </p>
      *
      * @param homeScore the new score for the home team

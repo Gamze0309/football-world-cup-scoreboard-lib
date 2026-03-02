@@ -10,7 +10,7 @@ import org.scoreboard.repository.ScoreboardRepository;
  * Service class for managing a football world cup scoreboard.
  * <p>
  * This service maintains a collection of ongoing matches and provides
- * operations to start matches and retrieve match information.
+ * operations to start, update, and finish matches, as well as retrieve match information.
  * </p>
  */
 public class ScoreboardService {
@@ -30,9 +30,11 @@ public class ScoreboardService {
      * <p>
      * The matches are sorted by their total score (home score + away score)
      * in descending order, with the highest-scoring matches appearing first.
+     * When matches have the same total score, they are ordered by their insertion order
+     * in descending order (most recently started matches appear first).
      * </p>
      *
-     * @return a list of all matches sorted by total score in descending order
+     * @return a list of all matches sorted by total score and insertion order in descending order
      */
     public List<Match> getAllMatchesSummary() {
         Comparator<Match> sortOrder = Comparator
