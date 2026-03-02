@@ -40,13 +40,6 @@ public class ScoreboardServiceTest {
         }
 
         @Test
-        @DisplayName("should return empty matches list initially")
-        void shouldReturnEmptyMatchesListInitially() {
-            List<Match> matches = scoreboardService.getAllMatches();
-            assertEquals(0, matches.size(), "Initial matches list should be empty");
-        }
-
-        @Test
         @DisplayName("should add match when startMatch called")
         void shouldAddMatch() {
             scoreboardService.startMatch("Brazil", "Argentina");
@@ -360,6 +353,13 @@ public class ScoreboardServiceTest {
 
             assertThrows(UnsupportedOperationException.class,
                 () -> result.add(new Match("Brazil", "Argentina")));
+        }
+
+        @Test
+        @DisplayName("should return empty matches list initially")
+        void shouldReturnEmptyMatchesListInitially() {
+            List<Match> matches = scoreboardService.getAllMatches();
+            assertEquals(0, matches.size(), "Initial matches list should be empty");
         }
     }
 }
