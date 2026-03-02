@@ -53,4 +53,30 @@ public class ScoreboardService {
         Match match = new Match(homeTeam, awayTeam);
         matches.add(match);
     }
+
+    /**
+     * Updates the score of an existing match on the scoreboard.
+     * <p>
+     * Finds the match by team names (case-insensitive) and replaces it with a new match
+     * object containing the updated scores. Team names are normalized by trimming whitespace.
+     * </p>
+     *
+     * @param homeTeam the name of the home team
+     * @param awayTeam the name of the away team
+     * @param homeScore the new score for the home team
+     * @param awayScore the new score for the away team
+     * @throws IllegalArgumentException if either team name is null or empty after trimming
+     */
+    public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+        String normalizedHome = Match.validateAndNormalizeTeamName(homeTeam);
+        String normalizedAway = Match.validateAndNormalizeTeamName(awayTeam);
+
+        for (int i = 0; i < matches.size(); i++) {
+            if (normalizedHome.equalsIgnoreCase(matches.get(i).getHomeTeam()) &&
+                normalizedAway.equalsIgnoreCase(matches.get(i).getAwayTeam())) {
+                    matches.set(i, new Match(normalizedHome, normalizedAway, homeScore, awayScore));
+                return;
+            }
+        }
+    }
 }

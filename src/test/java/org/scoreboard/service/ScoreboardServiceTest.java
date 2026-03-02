@@ -144,4 +144,53 @@ public class ScoreboardServiceTest {
             () -> scoreboardService.startMatch("Canada", "Argentina "));
         assertTrue(exception.getMessage().contains("already has an active match"));
     }
+
+    @Test
+    @DisplayName("should update match scores")
+    void shouldUpdateMatchScores() {
+        scoreboardService.startMatch("Brazil", "Argentina");
+        scoreboardService.updateScore("Brazil", "Argentina", 2, 3);
+
+        Match match = scoreboardService.getAllMatches().get(0);
+        assertAll(
+            () -> assertEquals(2, match.getHomeScore()),
+            () -> assertEquals(3, match.getAwayScore())
+        );
+    }
+
+    @Test
+    @DisplayName("should update scores multiple times on same match")
+    void shouldUpdateScoresMultipleTimes() {
+        scoreboardService.startMatch("Brazil", "Argentina");
+        scoreboardService.updateScore("Brazil", "Argentina", 1, 0);
+        scoreboardService.updateScore("Brazil", "Argentina", 2, 3);
+
+        Match match = scoreboardService.getAllMatches().get(0);
+        assertAll(
+            () -> assertEquals(2, match.getHomeScore()),
+            () -> assertEquals(3, match.getAwayScore())
+        );
+    }
+
+    @Test
+    @DisplayName("should update scores ignoring case")
+    void shouldUpdateScoresIgnoringCase() {
+        scoreboardService.startMatch("Brazil", "Argentina");
+        scoreboardService.updateScore("brazil", "argentina", 2, 3);
+
+        Match match = scoreboardService.getAllMatches().get(0);
+        assertAll(
+            () -> assertEquals(2, match.getHomeScore()),
+            () -> assertEquals(3, match.getAwayScore())
+        );
+    }
+
+    @Test
+    @DisplayName("should update scores with trimmed team names")
+    void shouldUpdateScoresWithTrimmedTeamNames() {
+        scoreboardService.startMatch("Mexico", "Germany");
+        scoreboardService.updateScore("Mexico ", " Germany", 3, 3);
+
+        assertEquals(3, scoreboardService.getAllMatches().get(0).getHomeScore());
+    }
 }

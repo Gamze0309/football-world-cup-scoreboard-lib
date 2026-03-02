@@ -10,9 +10,11 @@ package org.scoreboard.model;
 public class Match {
     private final String homeTeam;
     private final String awayTeam;
+    private int homeScore;
+    private int awayScore;
 
     /**
-     * Creates a new match between two teams.
+     * Creates a new match between two teams with initial score of 0-0.
      * <p>
      * Team names are normalized by trimming leading and trailing whitespace.
      * </p>
@@ -30,6 +32,25 @@ public class Match {
 
         this.homeTeam = normalizedHomeTeam;
         this.awayTeam = normalizedAwayTeam;
+    }
+
+    /**
+     * Creates a new match between two teams with specified scores.
+     * <p>
+     * Note: This constructor does not validate or normalize team names.
+     * It is intended for internal use when team names are already validated.
+     * </p>
+     *
+     * @param homeTeam the name of the home team (should already be normalized)
+     * @param awayTeam the name of the away team (should already be normalized)
+     * @param homeScore the score of the home team
+     * @param awayScore the score of the away team
+     */
+    public Match(String homeTeam, String awayTeam, int homeScore, int awayScore) {
+        this.homeTeam = homeTeam;
+        this.awayTeam = awayTeam;
+        this.homeScore = homeScore;
+        this.awayScore = awayScore;
     }
 
     /**
@@ -56,7 +77,7 @@ public class Match {
      * @return the home team's score
      */
     public int getHomeScore() {
-        return 0;
+        return homeScore;
     }
 
     /**
@@ -65,7 +86,7 @@ public class Match {
      * @return the away team's score
      */
     public int getAwayScore() {
-        return 0;
+        return awayScore;
     }
 
     /**
