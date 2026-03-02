@@ -21,7 +21,7 @@ public class InMemoryScoreboardRepository implements ScoreboardRepository{
      * {@inheritDoc}
      */
     @Override
-    public List<Match> getAllMatches() {
+    public synchronized List<Match> getAllMatches() {
         return List.copyOf(matches);
     }
 
@@ -29,7 +29,7 @@ public class InMemoryScoreboardRepository implements ScoreboardRepository{
      * {@inheritDoc}
      */
     @Override
-    public void startMatch(String homeTeam, String awayTeam) {
+    public synchronized void startMatch(String homeTeam, String awayTeam) {
         
         for (Match match : matches) {
             if (homeTeam.equalsIgnoreCase(match.homeTeam()) || homeTeam.equalsIgnoreCase(match.awayTeam())) {
@@ -50,7 +50,7 @@ public class InMemoryScoreboardRepository implements ScoreboardRepository{
      * {@inheritDoc}
      */
     @Override
-    public void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {  
+    public synchronized void updateScore(String homeTeam, String awayTeam, int homeScore, int awayScore) {  
         for (int i = 0; i < matches.size(); i++) {
             if (homeTeam.equalsIgnoreCase(matches.get(i).homeTeam()) &&
                 awayTeam.equalsIgnoreCase(matches.get(i).awayTeam())) {
@@ -66,7 +66,7 @@ public class InMemoryScoreboardRepository implements ScoreboardRepository{
      * {@inheritDoc}
      */
     @Override
-    public void finishMatch(String homeTeam, String awayTeam) {
+    public synchronized void finishMatch(String homeTeam, String awayTeam) {
         for (int i = 0; i < matches.size(); i++) {
             if (homeTeam.equalsIgnoreCase(matches.get(i).homeTeam()) &&
                 awayTeam.equalsIgnoreCase(matches.get(i).awayTeam())) {

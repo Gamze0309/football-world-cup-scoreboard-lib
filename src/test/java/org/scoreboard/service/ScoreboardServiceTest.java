@@ -1,6 +1,11 @@
 package org.scoreboard.service;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -400,7 +405,7 @@ public class ScoreboardServiceTest {
                 () -> assertEquals("Germany", summary.get(2).homeTeam())
             );
         }
-        
+
         @Test
         @DisplayName("should break ties by most recently started match first")
         void shouldBreakTiesByMostRecentlyStarted() {
@@ -449,6 +454,72 @@ public class ScoreboardServiceTest {
                 () -> assertEquals("Australia", summary.get(3).awayTeam()),
                 () -> assertEquals("Germany", summary.get(4).homeTeam()),
                 () -> assertEquals("France", summary.get(4).awayTeam())
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("Concurrency")
+    class Concurrency {
+
+        @Test
+        @DisplayName("should handle concurrent match starts without data corruption")
+        void shouldHandleConcurrentStarts() throws InterruptedException {
+            int threadCount = 10;
+            ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+            CountDownLatch latch = new CountDownLatch(1);
+
+            for (int i = 0; i < threadCount; i++) {
+                String home = "Home" + i;
+                String away = "Away" + i;
+                executor.submit(() -> {
+                    try {
+                        latch.await();
+                        scoreboardService.startMatch(home, away);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                });
+            }
+
+            latch.countDown();
+            executor.shutdown();
+            assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+
+            assertEquals(threadCount, scoreboardService.getAllMatchesSummary().size());
+        }
+
+        @Test
+        @DisplayName("should prevent same team from starting two matches concurrently")
+        void shouldPreventConcurrentDuplicateTeam() throws InterruptedException {
+            int threadCount = 10;
+            ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+            CountDownLatch latch = new CountDownLatch(1);
+            AtomicInteger successCount = new AtomicInteger(0);
+            AtomicInteger failureCount = new AtomicInteger(0);
+
+            for (int i = 0; i < threadCount; i++) {
+                String away = "Away" + i;
+                executor.submit(() -> {
+                    try {
+                        latch.await();
+                        scoreboardService.startMatch("SameTeam", away);
+                        successCount.incrementAndGet();
+                    } catch (IllegalStateException e) {
+                        failureCount.incrementAndGet();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                });
+            }
+
+            latch.countDown();
+            executor.shutdown();
+            assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+
+            assertAll(
+                () -> assertEquals(1, successCount.get(), "Only one match should succeed"),
+                () -> assertEquals(threadCount - 1, failureCount.get(), "All other attempts should fail")
             );
         }
     }
