@@ -10,8 +10,8 @@ package org.scoreboard.model;
 public class Match {
     private final String homeTeam;
     private final String awayTeam;
-    private int homeScore;
-    private int awayScore;
+    private final int homeScore;
+    private final int awayScore;
 
     /**
      * Creates a new match between two teams with initial score of 0-0.
@@ -25,6 +25,24 @@ public class Match {
      *                                  or if both team names are the same (case-insensitive)
      */
     public Match(String homeTeam, String awayTeam) {
+        this(homeTeam, awayTeam, 0, 0);
+    }
+
+    /**
+     * Private constructor for creating a match with specific scores.
+     * <p>
+     * This constructor validates and normalizes team names and ensures they are different.
+     * It is used internally for creating new match instances with updated scores.
+     * </p>
+     *
+     * @param homeTeam the name of the home team
+     * @param awayTeam the name of the away team
+     * @param homeScore the score of the home team
+     * @param awayScore the score of the away team
+     * @throws IllegalArgumentException if either team name is null or empty after trimming,
+     *                                  or if both team names are the same (case-insensitive)
+     */
+    private Match(String homeTeam, String awayTeam, int homeScore, int awayScore) {
         String normalizedHomeTeam = validateAndNormalizeTeamName(homeTeam);
         String normalizedAwayTeam = validateAndNormalizeTeamName(awayTeam);
 
@@ -32,25 +50,23 @@ public class Match {
 
         this.homeTeam = normalizedHomeTeam;
         this.awayTeam = normalizedAwayTeam;
+        this.homeScore = homeScore;
+        this.awayScore = awayScore;
     }
 
     /**
-     * Creates a new match between two teams with specified scores.
+     * Creates a new Match instance with updated scores.
      * <p>
-     * Note: This constructor does not validate or normalize team names.
-     * It is intended for internal use when team names are already validated.
+     * Since Match is immutable, this method returns a new Match object
+     * with the same teams but updated scores.
      * </p>
      *
-     * @param homeTeam the name of the home team (should already be normalized)
-     * @param awayTeam the name of the away team (should already be normalized)
-     * @param homeScore the score of the home team
-     * @param awayScore the score of the away team
+     * @param homeScore the new score for the home team
+     * @param awayScore the new score for the away team
+     * @return a new Match instance with the updated scores
      */
-    public Match(String homeTeam, String awayTeam, int homeScore, int awayScore) {
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-        this.homeScore = homeScore;
-        this.awayScore = awayScore;
+    public Match updateScore(int homeScore, int awayScore) {
+        return new Match(homeTeam, awayTeam, homeScore, awayScore);
     }
 
     /**

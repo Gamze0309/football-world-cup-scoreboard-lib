@@ -86,4 +86,30 @@ public class MatchTest {
             () -> new Match("Canada", "canada"));
         assertTrue(exception.getMessage().contains("Team names cannot be the same"));
     }
+
+    @Test
+    @DisplayName("should return new match with updated scores")
+    void shouldReturnNewMatchWithUpdatedScores() {
+        Match original = new Match("Mexico", "Canada");
+        Match updated = original.updateScore(2, 3);
+
+        assertAll(
+            () -> assertEquals(2, updated.getHomeScore()),
+            () -> assertEquals(3, updated.getAwayScore()),
+            () -> assertEquals("Mexico", updated.getHomeTeam()),
+            () -> assertEquals("Canada", updated.getAwayTeam())
+        );
+    }
+
+    @Test
+    @DisplayName("should preserve original match scores after update")
+    void shouldPreserveOriginalMatchScores() {
+        Match original = new Match("Mexico", "Canada");
+        original.updateScore(2, 3);
+
+        assertAll(
+            () -> assertEquals(0, original.getHomeScore()),
+            () -> assertEquals(0, original.getAwayScore())
+        );
+    }
 }

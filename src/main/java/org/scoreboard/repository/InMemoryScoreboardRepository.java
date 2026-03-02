@@ -51,7 +51,7 @@ public class InMemoryScoreboardRepository implements ScoreboardRepository{
         for (int i = 0; i < matches.size(); i++) {
             if (homeTeam.equalsIgnoreCase(matches.get(i).getHomeTeam()) &&
                 awayTeam.equalsIgnoreCase(matches.get(i).getAwayTeam())) {
-                    matches.set(i, new Match(homeTeam, awayTeam, homeScore, awayScore));
+                    matches.set(i, matches.get(i).updateScore(homeScore, awayScore));
                 return;
             }
         }
