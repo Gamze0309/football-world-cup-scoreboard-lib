@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+@DisplayName("Match")
 public class MatchTest {
     @Test
     @DisplayName("should instantiate match")
@@ -23,8 +24,10 @@ public class MatchTest {
     @DisplayName("should return team names from getters")
     void shouldReturnTeamNamesFromGetters() {
         Match match = new Match("Mexico", "Canada");
-        assertEquals("Mexico", match.getHomeTeam());
-        assertEquals("Canada", match.getAwayTeam());
+        assertAll(
+            () -> assertEquals("Mexico", match.getHomeTeam()),
+            () -> assertEquals("Canada", match.getAwayTeam())
+        );
     }
     
     @Test
@@ -32,8 +35,10 @@ public class MatchTest {
     void shouldInitializeScoresToZero() {
         Match match = new Match("Mexico", "Canada");
 
-        assertEquals(0, match.getHomeScore());
-        assertEquals(0, match.getAwayScore());
+        assertAll(
+            () -> assertEquals(0, match.getHomeScore()),
+            () -> assertEquals(0, match.getAwayScore())
+        );
     }
 
     @ParameterizedTest
