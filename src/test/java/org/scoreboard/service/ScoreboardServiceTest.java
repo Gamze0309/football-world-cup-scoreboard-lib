@@ -14,6 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.scoreboard.model.Match;
+import org.scoreboard.repository.InMemoryScoreboardRepository;
+import org.scoreboard.repository.ScoreboardRepository;
 
 @DisplayName("ScoreBoardService")
 public class ScoreboardServiceTest {
@@ -22,7 +24,8 @@ public class ScoreboardServiceTest {
 
     @BeforeEach
     void setUp() {
-        scoreboardService = new ScoreboardService();
+        ScoreboardRepository repository = new InMemoryScoreboardRepository();
+        scoreboardService = new ScoreboardService(repository);
     }
 
 

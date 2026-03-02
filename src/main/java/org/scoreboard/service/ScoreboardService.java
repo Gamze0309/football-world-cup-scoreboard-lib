@@ -1,9 +1,9 @@
 package org.scoreboard.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.scoreboard.model.Match;
+import org.scoreboard.repository.ScoreboardRepository;
 
 /**
  * Service class for managing a football world cup scoreboard.
@@ -13,7 +13,16 @@ import org.scoreboard.model.Match;
  * </p>
  */
 public class ScoreboardService {
-    private final List<Match> matches = new ArrayList<>();
+    private final ScoreboardRepository scoreboardRepository;
+
+    /**
+     * Constructs a new ScoreboardService with the specified repository.
+     *
+     * @param scoreboardRepository the repository to use for storing match data
+     */
+    public ScoreboardService(ScoreboardRepository scoreboardRepository) {
+        this.scoreboardRepository = scoreboardRepository;
+    }
     
     /**
      * Returns all matches currently tracked by the scoreboard.
@@ -21,7 +30,7 @@ public class ScoreboardService {
      * @return a list of all matches
      */
     public List<Match> getAllMatches() {
-        return matches;
+        return scoreboardRepository.getAllMatches();
     }
 
     /**
@@ -39,19 +48,7 @@ public class ScoreboardService {
     public void startMatch(String homeTeam, String awayTeam) {
         String normalizedHome = Match.validateAndNormalizeTeamName(homeTeam);
         String normalizedAway = Match.validateAndNormalizeTeamName(awayTeam);
-
-        for (Match match : matches) {
-            if (normalizedHome.equalsIgnoreCase(match.getHomeTeam()) || normalizedHome.equalsIgnoreCase(match.getAwayTeam())) {
-                throw new IllegalStateException("Team " + normalizedHome  + " already has an active match");
-            }
-
-            if (normalizedAway.equalsIgnoreCase(match.getHomeTeam()) || normalizedAway.equalsIgnoreCase(match.getAwayTeam())) {
-                throw new IllegalStateException("Team " + normalizedAway  + " already has an active match");
-            }
-        }
-
-        Match match = new Match(homeTeam, awayTeam);
-        matches.add(match);
+        scoreboardRepository.startMatch(normalizedHome, normalizedAway);
     }
 
     /**
@@ -73,19 +70,10 @@ public class ScoreboardService {
         if (homeScore < 0 || awayScore < 0) {
             throw new IllegalArgumentException("Scores cannot be negative");
         }
-
+        
         String normalizedHome = Match.validateAndNormalizeTeamName(homeTeam);
         String normalizedAway = Match.validateAndNormalizeTeamName(awayTeam);
-
-        for (int i = 0; i < matches.size(); i++) {
-            if (normalizedHome.equalsIgnoreCase(matches.get(i).getHomeTeam()) &&
-                normalizedAway.equalsIgnoreCase(matches.get(i).getAwayTeam())) {
-                    matches.set(i, new Match(normalizedHome, normalizedAway, homeScore, awayScore));
-                return;
-            }
-        }
-
-        throw new IllegalStateException("Match between " + homeTeam + " and " + awayTeam + " not found");
+        scoreboardRepository.updateScore(normalizedHome, normalizedAway, homeScore, awayScore);
     }
 
     /**
@@ -103,15 +91,6 @@ public class ScoreboardService {
     public void finishMatch(String homeTeam, String awayTeam) {
         String normalizedHome = Match.validateAndNormalizeTeamName(homeTeam);
         String normalizedAway = Match.validateAndNormalizeTeamName(awayTeam);
-
-        for (int i = 0; i < matches.size(); i++) {
-            if (normalizedHome.equalsIgnoreCase(matches.get(i).getHomeTeam()) &&
-                normalizedAway.equalsIgnoreCase(matches.get(i).getAwayTeam())) {
-                    matches.remove(i);
-                    return;
-            }
-        }
-
-        throw new IllegalStateException("Match between " + homeTeam + " and " + awayTeam + " not found");
+        scoreboardRepository.finishMatch(normalizedHome, normalizedAway);
     }
 }
