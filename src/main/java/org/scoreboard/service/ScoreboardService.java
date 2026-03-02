@@ -1,5 +1,6 @@
 package org.scoreboard.service;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.scoreboard.model.Match;
@@ -25,12 +26,22 @@ public class ScoreboardService {
     }
     
     /**
-     * Returns all matches currently tracked by the scoreboard.
+     * Returns a summary of all matches currently tracked by the scoreboard.
+     * <p>
+     * The matches are sorted by their total score (home score + away score)
+     * in descending order, with the highest-scoring matches appearing first.
+     * </p>
      *
-     * @return a list of all matches
+     * @return a list of all matches sorted by total score in descending order
      */
-    public List<Match> getAllMatches() {
-        return scoreboardRepository.getAllMatches();
+    public List<Match> getAllMatchesSummary() {
+        Comparator<Match> sortOrder = Comparator
+            .comparingInt((Match match) -> match.homeScore() + match.awayScore())
+            .reversed();
+
+        return scoreboardRepository.getAllMatches().stream()
+            .sorted(sortOrder)
+            .toList();
     }
 
     /**

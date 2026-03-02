@@ -44,7 +44,7 @@ public class ScoreboardServiceTest {
         void shouldAddMatch() {
             scoreboardService.startMatch("Brazil", "Argentina");
 
-            List<Match> matches = scoreboardService.getAllMatches();
+            List<Match> matches = scoreboardService.getAllMatchesSummary();
             assertEquals(1, matches.size(), "Matches list should contain one match after addition");
         }
 
@@ -53,7 +53,7 @@ public class ScoreboardServiceTest {
         void shouldStartMatchWithCorrectTeamNames() {
             scoreboardService.startMatch("Brazil", "Argentina");
 
-            List<Match> matches = scoreboardService.getAllMatches();
+            List<Match> matches = scoreboardService.getAllMatchesSummary();
             Match match = matches.get(0);
 
             assertAll(
@@ -156,7 +156,7 @@ public class ScoreboardServiceTest {
             scoreboardService.startMatch("Brazil", "Argentina");
             scoreboardService.updateScore("Brazil", "Argentina", 2, 3);
 
-            Match match = scoreboardService.getAllMatches().get(0);
+            Match match = scoreboardService.getAllMatchesSummary().get(0);
             assertAll(
                 () -> assertEquals(2, match.homeScore()),
                 () -> assertEquals(3, match.awayScore())
@@ -170,7 +170,7 @@ public class ScoreboardServiceTest {
             scoreboardService.updateScore("Brazil", "Argentina", 1, 0);
             scoreboardService.updateScore("Brazil", "Argentina", 2, 3);
 
-            Match match = scoreboardService.getAllMatches().get(0);
+            Match match = scoreboardService.getAllMatchesSummary().get(0);
             assertAll(
                 () -> assertEquals(2, match.homeScore()),
                 () -> assertEquals(3, match.awayScore())
@@ -183,7 +183,7 @@ public class ScoreboardServiceTest {
             scoreboardService.startMatch("Brazil", "Argentina");
             scoreboardService.updateScore("brazil", "argentina", 2, 3);
 
-            Match match = scoreboardService.getAllMatches().get(0);
+            Match match = scoreboardService.getAllMatchesSummary().get(0);
             assertAll(
                 () -> assertEquals(2, match.homeScore()),
                 () -> assertEquals(3, match.awayScore())
@@ -196,7 +196,7 @@ public class ScoreboardServiceTest {
             scoreboardService.startMatch("Mexico", "Germany");
             scoreboardService.updateScore("Mexico ", " Germany", 3, 3);
 
-            assertEquals(3, scoreboardService.getAllMatches().get(0).homeScore());
+            assertEquals(3, scoreboardService.getAllMatchesSummary().get(0).homeScore());
         }
 
         @ParameterizedTest
@@ -262,7 +262,7 @@ public class ScoreboardServiceTest {
             scoreboardService.startMatch("Brazil", "Argentina");
             scoreboardService.finishMatch("Brazil", "Argentina");
 
-            assertEquals(0, scoreboardService.getAllMatches().size());
+            assertEquals(0, scoreboardService.getAllMatchesSummary().size());
         }
 
         @Test
@@ -272,7 +272,7 @@ public class ScoreboardServiceTest {
             scoreboardService.startMatch("Turkey", "Canada");
             scoreboardService.finishMatch("Turkey", "Canada");
 
-            List<Match> matches = scoreboardService.getAllMatches();
+            List<Match> matches = scoreboardService.getAllMatchesSummary();
             assertAll(
                 () -> assertEquals(1, matches.size()),
                 () -> assertEquals("Brazil", matches.get(0).homeTeam()),
@@ -286,7 +286,7 @@ public class ScoreboardServiceTest {
             scoreboardService.startMatch("Brazil", "Argentina");
             scoreboardService.finishMatch("brazil", "argentina");
 
-            assertEquals(0, scoreboardService.getAllMatches().size());
+            assertEquals(0, scoreboardService.getAllMatchesSummary().size());
         }
 
         @Test
@@ -295,7 +295,7 @@ public class ScoreboardServiceTest {
             scoreboardService.startMatch("Brazil", "Argentina");
             scoreboardService.finishMatch(" Brazil ", "  Argentina");
 
-            assertEquals(0, scoreboardService.getAllMatches().size());
+            assertEquals(0, scoreboardService.getAllMatchesSummary().size());
         }
 
         @Test
@@ -349,7 +349,7 @@ public class ScoreboardServiceTest {
         @Test
         @DisplayName("should return unmodifiable list")
         void shouldReturnUnmodifiableList() {
-            List<Match> result = scoreboardService.getAllMatches();
+            List<Match> result = scoreboardService.getAllMatchesSummary();
 
             assertThrows(UnsupportedOperationException.class,
                 () -> result.add(new Match("Brazil", "Argentina")));
@@ -358,8 +358,47 @@ public class ScoreboardServiceTest {
         @Test
         @DisplayName("should return empty matches list initially")
         void shouldReturnEmptyMatchesListInitially() {
-            List<Match> matches = scoreboardService.getAllMatches();
+            List<Match> matches = scoreboardService.getAllMatchesSummary();
             assertEquals(0, matches.size(), "Initial matches list should be empty");
+        }
+
+        @Test
+        @DisplayName("should return matches sorted by total score descending")
+        void shouldSortByTotalScoreDescending() {
+            scoreboardService.startMatch("Germany", "France");
+            scoreboardService.startMatch("Mexico", "Canada");
+            scoreboardService.startMatch("Spain", "Brazil");
+
+            scoreboardService.updateScore("Mexico", "Canada", 0, 5);
+            scoreboardService.updateScore("Spain", "Brazil", 10, 2);
+            scoreboardService.updateScore("Germany", "France", 2, 2);
+
+            List<Match> summary = scoreboardService.getAllMatchesSummary();
+
+            assertAll(
+                () -> assertEquals("Spain", summary.get(0).homeTeam()),
+                () -> assertEquals("Mexico", summary.get(1).homeTeam()),
+                () -> assertEquals("Germany", summary.get(2).homeTeam())
+            );
+        }
+
+        @Test
+        @DisplayName("should return matches sorted by total score")
+        void shouldGetSortedSummaryByTotalScore() {
+            scoreboardService.startMatch("Mexico", "Canada");
+            scoreboardService.startMatch("Spain", "Brazil");
+            scoreboardService.startMatch("Germany", "France");
+            
+            scoreboardService.updateScore("Mexico", "Canada", 2, 5);
+            scoreboardService.updateScore("Spain", "Brazil", 10, 3);
+            scoreboardService.updateScore("Germany", "France", 2, 4);
+
+            List<Match> summary = scoreboardService.getAllMatchesSummary();
+            assertAll(
+                () -> assertEquals("Spain", summary.get(0).homeTeam()),
+                () -> assertEquals("Mexico", summary.get(1).homeTeam()),
+                () -> assertEquals("Germany", summary.get(2).homeTeam())
+            );
         }
     }
 }
